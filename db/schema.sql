@@ -20,5 +20,7 @@ CREATE TABLE employees (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INTEGER UNSIGNED,
-    manager_id INTEGER UNSIGNED
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
+    manager_id INTEGER UNSIGNED,
+    CONSTRAINT fk_manager FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE SET NULL
 );
