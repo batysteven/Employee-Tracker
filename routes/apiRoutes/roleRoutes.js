@@ -7,6 +7,7 @@ router.get('/roles', (req, res) => {
         `SELECT * FROM roles`,
         function(err, results) {
             res.json(results);
+            console.table([], results);
         }
     )
 });
