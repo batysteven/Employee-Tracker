@@ -12,8 +12,19 @@ app.use(express.json());
 // Use apiRoutes
 app.use(routes);
 
+// Default response for any other request(Not Found)
+app.use((req, res) => {
+    res.status(404).end();
+});
+
 // Start server after DB connection
-db.on('open', () => {
+db.connect(function (err) {
+    if (err) {
+        return console.error('error: ' + err.message);
+    }
+
+    console.log('Connected to the MySQL server.');
+
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
