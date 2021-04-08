@@ -3,47 +3,19 @@ const db = require('../../db/database');
 
 // Get all departments
 router.get('/departments', (req, res) => {
-    const sql = `SELECT * FROM departments`;
-    let params = [];
-    db.all(sql, params, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
+    db.query(
+        `SELECT * FROM departments`,
+        function(err, results) {
+            res.json(results);
         }
-        res.json({
-            message: 'success',
-            data: rows
-        });
-    });
+    )
 });
 
-// Get single department
-router.get('/department/:id', (req, res) => {
-    const sql = `SELECT * FROM departments WHERE id = ?`;
-    const params = [req.params.id];
-    db.get(sql, params, (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({
-            message: 'success',
-            data: rows
-        });
-    });
-});
-
-// Delete a department
-router.delete('/department/:id', (req, res) => {
-    const sql = `DELETE FROM departments WHERE id = ?`;
-    const params = [req.params.id];
-    db.run(sql, params, function(err, result) {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({ message: 'deleted', changes: this.changes });
-    });
+// Create new department
+router.post('/', (req, res) => {
+    db.query(
+        `INSERT INTO departments (name) VALUES  (${userInput})`
+    )
 });
 
 module.exports = router;
