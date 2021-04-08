@@ -1,15 +1,16 @@
-const db = require('./db/database');
 const express = require('express');
+const db = require('./db/database');
+const routes = require('./routes');
 
-const app = express();
 const PORT = process.env.PORT || 3001;
+const app = express();
 
-const apiRoutes = require('./routes/apiRoutes');
-
-app.use(express.json());
+// Express middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use('/api', apiRoutes);
+// Use apiRoutes
+app.use(routes);
 
 // Start server after DB connection
 db.on('open', () => {
