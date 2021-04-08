@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./db/database');
 const routes = require('./routes');
+const employeeTracker = require('./index');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -29,3 +30,5 @@ db.connect(function (err) {
         console.log(`Server running on port ${PORT}`);
     });
 });
+
+employeeTracker;

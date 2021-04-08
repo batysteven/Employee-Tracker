@@ -7,6 +7,7 @@ router.get('/departments', (req, res) => {
         `SELECT * FROM departments`,
         function(err, results) {
             res.json(results);
+            console.table([], results);
         }
     )
 });
