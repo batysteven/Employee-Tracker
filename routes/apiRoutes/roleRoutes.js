@@ -4,7 +4,8 @@ const db = require('../../db/database');
 // Get all roles
 router.get('/roles', (req, res) => {
     db.query(
-        `SELECT * FROM roles`,
+        `SELECT roles.id, roles.title, roles.salary, departments.name FROM roles
+        LEFT JOIN departments ON roles.department_id = departments.id;`,
         function(err, results) {
             res.json(results);
             console.table([], results);

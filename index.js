@@ -25,6 +25,7 @@ class employeeTracker {
                     this.promptEmployees();
                 }
                 if (response.options === 3) {
+                    this.addDepartment();
                     console.table([]);
                 }
                 if (response.options === 4) {
@@ -67,6 +68,31 @@ class employeeTracker {
             },
         })
             .then(this.promptOptions());
+    }
+
+    addDepartment() {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: 'Please name your Department.',
+                validate: nameInput => {
+                    if (nameInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid Department name.');
+                        return false;
+                    }
+                }
+            },
+            fetch('http://localhost:3001/api/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            })
+        ])
+        .then(this.promptOptions());
     }
 }
 

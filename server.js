@@ -29,6 +29,6 @@ db.connect(function (err) {
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
+    employeeTracker;
 });
 
-employeeTracker;

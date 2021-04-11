@@ -4,7 +4,7 @@ const db = require('../../db/database');
 // Get all departments
 router.get('/departments', (req, res) => {
     db.query(
-        `SELECT * FROM departments`,
+        `SELECT * FROM departments;`,
         function(err, results) {
             res.json(results);
             console.table([], results);
@@ -15,7 +15,7 @@ router.get('/departments', (req, res) => {
 // Create new department
 router.post('/', (req, res) => {
     db.query(
-        `INSERT INTO departments (name) VALUES  (${userInput})`
+        `INSERT INTO departments (name) VALUES  (${name})`
     )
 });
 

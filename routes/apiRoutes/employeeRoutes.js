@@ -4,7 +4,10 @@ const db = require('../../db/database');
 // Get all employees
 router.get('/employees', (req, res) => {
     db.query(
-        `SELECT * FROM employees`,
+        `SELECT e.id, e.first_name, e.last_name, roles.title, departments.name, roles.salary, Concat(m.first_name, ' ', m.last_name) manager FROM (((employees e 
+            LEFT JOIN employees m ON m.id = e.manager_id) 
+            INNER JOIN roles ON e.role_id = roles.id) 
+            INNER JOIN departments ON roles.department_id = departments.id) ORDER BY e.id;`,
         function(err, results) {
             res.json(results);
             console.table([], results);
