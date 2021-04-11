@@ -5,7 +5,7 @@ const db = require('../../db/database');
 router.get('/departments', (req, res) => {
     db.query(
         `SELECT * FROM departments;`,
-        function(err, results) {
+        function (err, results) {
             res.json(results);
             console.table([], results);
         }
@@ -14,9 +14,15 @@ router.get('/departments', (req, res) => {
 
 // Create new department
 router.post('/', (req, res) => {
-    db.query(
-        `INSERT INTO departments (name) VALUES  (${name})`
-    )
+    const department = {
+        name: req.body.name
+    }
+    var sql = `INSERT INTO departments (name) VALUES (?)`; 
+    var values = department;
+    db.query(sql, values.name, function (err, result) {
+        if (err) throw err;
+        console.log("1 record inserted");
+    });
 });
 
 module.exports = router;

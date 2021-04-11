@@ -3,6 +3,7 @@ const db = require('./db/database');
 const cTable = require('console.table');
 const router = require('express').Router();
 const fetch = require('node-fetch');
+const { response } = require('express');
 
 class employeeTracker {
 
@@ -74,7 +75,7 @@ class employeeTracker {
         inquirer.prompt([
             {
                 type: 'input',
-                name: 'name',
+                name: 'departmentName',
                 message: 'Please name your Department.',
                 validate: nameInput => {
                     if (nameInput) {
@@ -85,15 +86,27 @@ class employeeTracker {
                     }
                 }
             },
-            fetch('http://localhost:3001/api/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            })
         ])
-        .then(this.promptOptions());
+            .then(({ departmentName }) => {
+                const department = { name: departmentName };
+                fetch('http://localhost:3001/api/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(department),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            })
+            .then(this.promptOptions());
     }
+
 }
 
 new employeeTracker().promptOptions();
