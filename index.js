@@ -117,13 +117,47 @@ async function addRole() {
             deptInfo.forEach(dept => {
                 if (dept !== null ) {
                     dept = [
-                        dept.id,
-                        dept.name,
+                        name = dept.name,
+                        value = dept.id,
                     ]
                     newDeptInfo.push(dept)
                 }
-            }) 
-            return newDeptInfo;
+            })
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'roleTitle',
+                    message: 'Please give a Title to your Role.',
+                    validate: titleInput => {
+                        if (titleInput) {
+                            return true;
+                        } else {
+                            console.log('Please enter a valid Role title.');
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'input',
+                    name: 'roleSalary',
+                    message: 'Please give a Salary to your Role.',
+                    validate: salaryInput => {
+                        if (salaryInput) {
+                            return true;
+                        } else {
+                            console.log('Please enter a valid Salary for your Role.');
+                            return false;
+                        }
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'deptId',
+                    message: 'Please select the Department this Role belongs to.',
+                    choices: [{ name: newDeptInfo, value: newDeptInfo, }]
+                }
+            ]) 
+            // return newDeptInfo;
         }
     );
 
@@ -138,40 +172,40 @@ async function addRole() {
     // });
     
     // deptFetcher.then((deptData) => {
-        inquirer.prompt([
-            {
-                type: 'input',
-                name: 'roleTitle',
-                message: 'Please give a Title to your Role.',
-                validate: titleInput => {
-                    if (titleInput) {
-                        return true;
-                    } else {
-                        console.log('Please enter a valid Role title.');
-                        return false;
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'roleSalary',
-                message: 'Please give a Salary to your Role.',
-                validate: salaryInput => {
-                    if (salaryInput) {
-                        return true;
-                    } else {
-                        console.log('Please enter a valid Salary for your Role.');
-                        return false;
-                    }
-                }
-            },
-            {
-                type: 'list',
-                name: 'deptId',
-                message: 'Please select the Department this Role belongs to.',
-                choices: [{ name: newDeptInfo.name[0], value: newDeptInfo.value[0] }]
-            }
-        ])
+        // inquirer.prompt([
+        //     {
+        //         type: 'input',
+        //         name: 'roleTitle',
+        //         message: 'Please give a Title to your Role.',
+        //         validate: titleInput => {
+        //             if (titleInput) {
+        //                 return true;
+        //             } else {
+        //                 console.log('Please enter a valid Role title.');
+        //                 return false;
+        //             }
+        //         }
+        //     },
+        //     {
+        //         type: 'input',
+        //         name: 'roleSalary',
+        //         message: 'Please give a Salary to your Role.',
+        //         validate: salaryInput => {
+        //             if (salaryInput) {
+        //                 return true;
+        //             } else {
+        //                 console.log('Please enter a valid Salary for your Role.');
+        //                 return false;
+        //             }
+        //         }
+        //     },
+        //     {
+        //         type: 'list',
+        //         name: 'deptId',
+        //         message: 'Please select the Department this Role belongs to.',
+        //         choices: [{ name: newDeptInfo.name[0], value: newDeptInfo.value[0] }]
+        //     }
+        // ])
     // }); 
 }
 
