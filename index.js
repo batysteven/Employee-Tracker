@@ -109,7 +109,7 @@ async function addDepartment() {
 async function addRole() {
     let deptInfo;
     let newDeptInfo = [];
-    let deptGrabber = new db.query(
+    db.query(
         `SELECT id, name FROM departments;`,
         function (err, results) {
             deptInfo = results;
@@ -126,8 +126,18 @@ async function addRole() {
             return newDeptInfo;
         }
     );
+
+    // let deptFetcher = new Promise((resolve, reject) => {
+    //     for(let dept of newDeptInfo) {
+    //         var deptData = {
+    //             name: dept.name,
+    //             value: dept.id
+    //         }
+    //         resolve(newDeptInfo);
+    //     }
+    // });
     
-    deptGrabber.then((newDeptInfo) => {
+    // deptFetcher.then((deptData) => {
         inquirer.prompt([
             {
                 type: 'input',
@@ -159,10 +169,10 @@ async function addRole() {
                 type: 'list',
                 name: 'deptId',
                 message: 'Please select the Department this Role belongs to.',
-                choices: [{ newDeptInfo }]
+                choices: [{ name: newDeptInfo.name[0], value: newDeptInfo.value[0] }]
             }
         ])
-    }); 
+    // }); 
 }
 
 main();
