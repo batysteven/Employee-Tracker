@@ -4,6 +4,7 @@ const cTable = require('console.table');
 const router = require('express').Router();
 const fetch = require('node-fetch');
 const { response } = require('express');
+const { promise } = require('./db/database');
 
 
 
@@ -30,7 +31,6 @@ async function main() {
             }
             if (response.options === 4) {
                 addRole();
-                console.table([]);
             }
             if (response.options === 5) {
                 console.table([]);
@@ -72,7 +72,7 @@ async function promptEmployees() {
 }
 
 async function addDepartment() {
-    const addingDepartment = await inquirer.prompt({
+    const addingDepartment = (await inquirer.prompt({
             type: 'input',
             name: 'departmentName',
             message: 'Please name your Department.',
@@ -101,53 +101,68 @@ async function addDepartment() {
                 .catch((error) => {
                     console.error('Error:', error);
                 });
-        })
-        .then(main());
+        }))
+        main();
     
 }
 
 async function addRole() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'roleTitle',
-            message: 'Please give a Title to your Role.',
-            validate: titleInput => {
-                if (titleInput) {
-                    return true;
-                } else {
-                    console.log('Please enter a valid Role title.');
-                    return false;
+    let deptInfo;
+    let newDeptInfo = [];
+    let deptGrabber = new db.query(
+        `SELECT id, name FROM departments;`,
+        function (err, results) {
+            deptInfo = results;
+            // console.log(deptInfo);
+            deptInfo.forEach(dept => {
+                if (dept !== null ) {
+                    dept = [
+                        dept.id,
+                        dept.name,
+                    ]
+                    newDeptInfo.push(dept)
                 }
-            }
-        },
-        {
-            type: 'input',
-            name: 'roleSalary',
-            message: 'Please give a Salary to your Role.',
-            validate: salaryInput => {
-                if (salaryInput) {
-                    return true;
-                } else {
-                    console.log('Please enter a valid Salary for your Role.');
-                    return false;
+            }) 
+            return newDeptInfo;
+        }
+    );
+    
+    deptGrabber.then((newDeptInfo) => {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'roleTitle',
+                message: 'Please give a Title to your Role.',
+                validate: titleInput => {
+                    if (titleInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid Role title.');
+                        return false;
+                    }
                 }
-            }
-        },
-        {
-            type: 'input',
-            name: 'roleName',
-            message: 'Please name your Role.',
-            validate: nameInput => {
-                if (nameInput) {
-                    return true;
-                } else {
-                    console.log('Please enter a valid Role name.');
-                    return false;
+            },
+            {
+                type: 'input',
+                name: 'roleSalary',
+                message: 'Please give a Salary to your Role.',
+                validate: salaryInput => {
+                    if (salaryInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid Salary for your Role.');
+                        return false;
+                    }
                 }
+            },
+            {
+                type: 'list',
+                name: 'deptId',
+                message: 'Please select the Department this Role belongs to.',
+                choices: [{ newDeptInfo }]
             }
-        },
-    ])
+        ])
+    }); 
 }
 
 main();
