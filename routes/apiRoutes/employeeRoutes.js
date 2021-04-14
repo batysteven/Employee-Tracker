@@ -44,7 +44,7 @@ router.put('/employee/:id', (req, res) => {
     const newRole_id = updatedEmployee.role_id;
     const employee_id = updatedEmployee.employee_id;
 
-    var sql = `UPDATE employees SET role_id = '${newRole_id}' WHERE employee.id = '${employee_id}';`
+    var sql = `UPDATE employees SET role_id = ${newRole_id} WHERE employees.id = ${employee_id};`
     db.query(sql, function (err, result) {
         if (err) throw err;
         console.log("Record Updated");

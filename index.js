@@ -353,14 +353,13 @@ async function updateEmployee() {
             }
         ])
         .then(({ employeeName, rolePicked }) => {
-            console.log(employeeName, rolePicked);
             const updatedEmployee = { role_id: rolePicked, employee_id: employeeName}
-            fetch('http://localhost:3001/api/newEmployee', {
-                method: 'POST',
+            fetch('http://localhost:3001/api/employee/:id', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newEmployee),
+                body: JSON.stringify(updatedEmployee),
             })
                 .then(response => response.json())
                 .then(data => {
