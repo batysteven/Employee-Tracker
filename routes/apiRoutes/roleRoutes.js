@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const db = require('../../db/database');
-const main = require('../../index');
 
 // Get all roles
 router.get('/roles', (req, res) => {
@@ -21,13 +20,14 @@ router.post('/newRole', (req, res) => {
         salary: req.body.salary,
         department_id: req.body.department_id
     }
-    var sql = `INSERT INTO roles (title, salary, department_id) VALUES (?)`; 
-    var values = newRole;
-    // console.log(values);
-    db.query(sql, values(values.title, values.salary, values.department_id), function (err, result) {
+    const newRoleTitle = newRole.title;
+    const newRoleSalary = newRole.salary;
+    const newRoleDept = newRole.department_id;
+     
+    var sql = `INSERT INTO roles (title, salary, department_id) VALUES ('${newRoleTitle}', '${newRoleSalary}', '${newRoleDept}')`;
+    db.query(sql, function (err, result) {
         if (err) throw err;
         console.log("1 record inserted");
-        main;
     });
 });
 

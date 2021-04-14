@@ -33,7 +33,7 @@ async function main() {
                 addRole();
             }
             if (response.options === 5) {
-                console.table([]);
+                addEmployee();
             }
             if (response.options === 6) {
                 console.table([]);
@@ -132,6 +132,7 @@ async function addRole() {
         )
     });
 
+    // ask user for title, salary, and department roles belongs to
     deptArray.then((dept) => {
         inquirer.prompt([
             {
@@ -167,26 +168,36 @@ async function addRole() {
                 name: "deptName"
             }
         ])
-            .then(( { roleTitle, roleSalary, deptName }) => {
-                console.log(dept);
-                console.log(deptName);
-                const newRole = { title: roleTitle, salary: roleSalary, department_id: deptName.value }
-                fetch('http://localhost:3001/api/newRole', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(newRole),
+            .then(({ roleTitle, roleSalary, deptName }) => {
+                const deptId = dept.map(lookingForId => {
+                    if (lookingForId.name === deptName) {
+                        let choosenDept = lookingForId.id;
+                        const newRole = { title: roleTitle, salary: roleSalary, department_id: choosenDept }
+                        fetch('http://localhost:3001/api/newRole', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(newRole),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Success:', data);
+                            })
+                            .catch((error) => {
+                                console.error('Error:', error);
+                            })
+                            .then(main());
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    })
+
             })
+            
     });
+}
+
+async function addEmployee() {
+
 }
 
 main();
