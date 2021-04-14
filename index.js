@@ -197,6 +197,49 @@ async function addRole() {
 }
 
 async function addEmployee() {
+    // Query array for id and title of roles
+    const grabRole = new Promise((resolve, reject) => {
+        db.query(
+            `SELECT id, title FROM roles;`,
+            function (err, results) {
+                resolve(results);
+                results.map(role => {
+                    if (role !== null) {
+                        role = [
+                            {
+                                title: role.title,
+                                value: role.id,
+                            }
+                        ]
+                        resolve(results);
+                    }
+                })
+            }
+        )
+    })
+    .then()
+    // Query array for id and concat first/last name
+    const grabEmployees = new Promise((resolve, reject) => {
+        db.query(
+            `SELECT id, Concat(first_name, last_name) person FROM employees;`,
+            function (err, results) {
+                resolve(results);
+                results.map(employee => {
+                    if (employee !== null) {
+                        employee = [
+                            {
+                                name: employee.person,
+                                value: employee.id
+                            } 
+                        ]
+                        console.log(employee)
+                        resolve(results);
+                    }
+                })
+            }
+        )
+    });
+
 
 }
 
