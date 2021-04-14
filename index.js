@@ -41,6 +41,7 @@ async function main() {
         })
 }
 
+// get all departments
 async function promptDepartments() {
     fetch('http://localhost:3001/api/departments', {
         method: 'GET',
@@ -51,6 +52,7 @@ async function promptDepartments() {
         .then(main());
 }
 
+// get all roles
 async function promptRoles() {
     fetch('http://localhost:3001/api/roles', {
         method: 'GET',
@@ -61,6 +63,7 @@ async function promptRoles() {
         .then(main());
 }
 
+// get all employees
 async function promptEmployees() {
     fetch('http://localhost:3001/api/employees', {
         method: 'GET',
@@ -71,20 +74,21 @@ async function promptEmployees() {
         .then(main());
 }
 
+// Ask user for the name of the new department
 async function addDepartment() {
     const addingDepartment = (await inquirer.prompt({
-            type: 'input',
-            name: 'departmentName',
-            message: 'Please name your Department.',
-            validate: nameInput => {
-                if (nameInput) {
-                    return true;
-                } else {
-                    console.log('Please enter a valid Department name.');
-                    return false;
-                }
+        type: 'input',
+        name: 'departmentName',
+        message: 'Please name your Department.',
+        validate: nameInput => {
+            if (nameInput) {
+                return true;
+            } else {
+                console.log('Please enter a valid Department name.');
+                return false;
             }
-        })
+        }
+    })
         .then(({ departmentName }) => {
             const department = { name: departmentName };
             fetch('http://localhost:3001/api/', {
@@ -102,111 +106,71 @@ async function addDepartment() {
                     console.error('Error:', error);
                 });
         }))
-        main();
-    
+    main();
+
 }
 
 async function addRole() {
-    let deptInfo;
-    let newDeptInfo = [];
-    db.query(
-        `SELECT id, name FROM departments;`,
-        function (err, results) {
-            deptInfo = results;
-            // console.log(deptInfo);
-            deptInfo.forEach(dept => {
-                if (dept !== null ) {
-                    dept = [
-                        name = dept.name,
-                        value = dept.id,
-                    ]
-                    newDeptInfo.push(dept)
-                }
-            })
-            inquirer.prompt([
-                {
-                    type: 'input',
-                    name: 'roleTitle',
-                    message: 'Please give a Title to your Role.',
-                    validate: titleInput => {
-                        if (titleInput) {
-                            return true;
-                        } else {
-                            console.log('Please enter a valid Role title.');
-                            return false;
-                        }
-                    }
-                },
-                {
-                    type: 'input',
-                    name: 'roleSalary',
-                    message: 'Please give a Salary to your Role.',
-                    validate: salaryInput => {
-                        if (salaryInput) {
-                            return true;
-                        } else {
-                            console.log('Please enter a valid Salary for your Role.');
-                            return false;
-                        }
-                    }
-                },
-                {
-                    type: 'list',
-                    name: 'deptId',
-                    message: 'Please select the Department this Role belongs to.',
-                    choices: [{ name: newDeptInfo, value: newDeptInfo, }]
-                }
-            ]) 
-            // return newDeptInfo;
-        }
-    );
 
-    // let deptFetcher = new Promise((resolve, reject) => {
-    //     for(let dept of newDeptInfo) {
-    //         var deptData = {
-    //             name: dept.name,
-    //             value: dept.id
-    //         }
-    //         resolve(newDeptInfo);
-    //     }
-    // });
-    
-    // deptFetcher.then((deptData) => {
-        // inquirer.prompt([
-        //     {
-        //         type: 'input',
-        //         name: 'roleTitle',
-        //         message: 'Please give a Title to your Role.',
-        //         validate: titleInput => {
-        //             if (titleInput) {
-        //                 return true;
-        //             } else {
-        //                 console.log('Please enter a valid Role title.');
-        //                 return false;
-        //             }
-        //         }
-        //     },
-        //     {
-        //         type: 'input',
-        //         name: 'roleSalary',
-        //         message: 'Please give a Salary to your Role.',
-        //         validate: salaryInput => {
-        //             if (salaryInput) {
-        //                 return true;
-        //             } else {
-        //                 console.log('Please enter a valid Salary for your Role.');
-        //                 return false;
-        //             }
-        //         }
-        //     },
-        //     {
-        //         type: 'list',
-        //         name: 'deptId',
-        //         message: 'Please select the Department this Role belongs to.',
-        //         choices: [{ name: newDeptInfo.name[0], value: newDeptInfo.value[0] }]
-        //     }
-        // ])
-    // }); 
+    // Query array for current name's and id's of departments to populate choices for user
+    const deptArray = new Promise((resolve, reject) => {
+        db.query(
+            `SELECT id, name FROM departments;`,
+            function (err, results) {
+                results.map(dept => {
+                    if (dept !== null) {
+                        dept = [
+                            {
+                                name: dept.name,
+                                value: dept.id,
+                            }
+                        ]
+                        resolve(results);
+                    }
+                })
+            }
+        )
+    });
+
+    deptArray.then((dept) => {
+        console.log(dept)
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'roleTitle',
+                message: 'Please give a Title to your Role.',
+                validate: titleInput => {
+                    if (titleInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid Role title.');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'roleSalary',
+                message: 'Please give a Salary to your Role.',
+                validate: salaryInput => {
+                    if (salaryInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid Salary for your Role.');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'list',
+                message: 'Please select the Department this Role belongs to.',
+                choices: dept,
+                name: "deptName",
+            }
+        ])
+    })
+
+
 }
 
 main();
