@@ -37,9 +37,18 @@ router.post('/newEmployee', (req, res) => {
 
 // Update an employee
 router.put('/employee/:id', (req, res) => {
-    db.query(
-        `INSERT INTO employees SET role_id = ${userInput} WHERE id = ? `
-    )
+    const updatedEmployee = {
+        role_id: req.body.role_id,
+        employee_id: req.body.employee_id
+    }
+    const newRole_id = updatedEmployee.role_id;
+    const employee_id = updatedEmployee.employee_id;
+
+    var sql = `UPDATE employees SET role_id = '${newRole_id}' WHERE employee.id = '${employee_id}';`
+    db.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Record Updated");
+    })
 });
 
 module.exports = router;

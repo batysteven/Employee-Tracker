@@ -14,7 +14,7 @@ async function main() {
         type: 'list',
         name: 'options',
         message: 'What would you like to do?',
-        choices: [{ name: "View All Departments", value: 0 }, { name: "View All Roles", value: 1 }, { name: "View All Employees", value: 2 }, { name: "Add a Department", value: 3 }, { name: "Add a Role", value: 4 }, { name: "Add an Employee", value: 5 }, { name: "Update an Employee", value: 6 }]
+        choices: [{ name: "View All Departments", value: 0 }, { name: "View All Roles", value: 1 }, { name: "View All Employees", value: 2 }, { name: "Add a Department", value: 3 }, { name: "Add a Role", value: 4 }, { name: "Add an Employee", value: 5 }, { name: "Update an Employee's Role", value: 6 }]
     })
         .then((response) => {
             if (response.options === 0) {
@@ -199,6 +199,7 @@ async function addRole() {
 async function addEmployee() {
     let roleArray = [];
     let employeeArray = [{ name: "None", value: null }];
+
     // Query array for id and title of roles
     const grabRoleAndEmployees = new Promise((resolve, reject) => {
         db.query(
@@ -210,8 +211,6 @@ async function addEmployee() {
                     {
                         name: role.title,
                         value: role.id,
-
-
                     }
                     roleArray.push(roles);
                     resolve(results);
@@ -219,7 +218,7 @@ async function addEmployee() {
             }
         )
         db.query(
-            `SELECT id, Concat(first_name, last_name) person FROM employees;`,
+            `SELECT id, Concat(first_name, ' ', last_name) person FROM employees;`,
             function (err, results) {
                 resolve(results);
                 results.map(employee => {
@@ -298,8 +297,83 @@ async function addEmployee() {
 
             })
     });
+}
 
+async function updateEmployee() {
+    let employeeArray = [];
+    let roleArray = [];
 
+    const grabEmployeesandRoles = new Promise((resolve, reject) => {
+        db.query(
+            `SELECT id, Concat(first_name, last_name) name FROM employees;`,
+            function (err, results) {
+                resolve(results);
+                results.map(employee => {
+                    let employees =
+                    {
+                        name: employee.name,
+                        value: employee.id
+                    }
+                    employeeArray.push(employees)
+                    resolve(results);
+                })
+            }
+        )
+        db.query(
+            `SELECT id, title FROM roles;`,
+            function (err, results) {
+                resolve(results);
+                results.map(role => {
+                    let roles =
+                    {
+                        name: role.title,
+                        value: role.id,
+                    }
+                    roleArray.push(roles);
+                    resolve(results);
+                })
+            }
+        )
+    });
+
+    // ask user for title, salary, and department roles belongs to
+    grabEmployeesandRoles.then((roles, employees) => {
+        inquirer.prompt([
+            {
+                type: 'list',
+                message: 'Please select the employee you wish to update.',
+                choices: employeeArray,
+                name: "employeeName"
+            },
+            {
+                type: 'list',
+                message: 'Please select their new Role.',
+                choices: roleArray,
+                name: "rolePicked"
+            }
+        ])
+        .then(({ employeeName, rolePicked }) => {
+            console.log(employeeName, rolePicked);
+            const updatedEmployee = { role_id: rolePicked, employee_id: employeeName}
+            fetch('http://localhost:3001/api/newEmployee', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newEmployee),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                })
+                .then(main());
+
+        })
+    });
+    
 }
 
 main();
