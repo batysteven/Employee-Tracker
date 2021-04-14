@@ -133,7 +133,6 @@ async function addRole() {
     });
 
     deptArray.then((dept) => {
-        console.log(dept)
         inquirer.prompt([
             {
                 type: 'input',
@@ -165,12 +164,29 @@ async function addRole() {
                 type: 'list',
                 message: 'Please select the Department this Role belongs to.',
                 choices: dept,
-                name: "deptName",
+                name: "deptName"
             }
         ])
-    })
-
-
+            .then(( { roleTitle, roleSalary, deptName }) => {
+                console.log(dept);
+                console.log(deptName);
+                const newRole = { title: roleTitle, salary: roleSalary, department_id: deptName.value }
+                fetch('http://localhost:3001/api/newRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newRole),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            })
+    });
 }
 
 main();
