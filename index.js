@@ -36,7 +36,7 @@ async function main() {
                 addEmployee();
             }
             if (response.options === 6) {
-                console.table([]);
+                updateEmployee();
             }
         })
 }
@@ -192,52 +192,111 @@ async function addRole() {
                 })
 
             })
-            
+
     });
 }
 
 async function addEmployee() {
+    let roleArray = [];
+    let employeeArray = [{ name: "None", value: null }];
     // Query array for id and title of roles
-    const grabRole = new Promise((resolve, reject) => {
+    const grabRoleAndEmployees = new Promise((resolve, reject) => {
         db.query(
             `SELECT id, title FROM roles;`,
             function (err, results) {
                 resolve(results);
                 results.map(role => {
-                    if (role !== null) {
-                        role = [
-                            {
-                                title: role.title,
-                                value: role.id,
-                            }
-                        ]
-                        resolve(results);
+                    let roles =
+                    {
+                        name: role.title,
+                        value: role.id,
+
+
                     }
+                    roleArray.push(roles);
+                    resolve(results);
                 })
             }
         )
-    })
-    .then()
-    // Query array for id and concat first/last name
-    const grabEmployees = new Promise((resolve, reject) => {
         db.query(
             `SELECT id, Concat(first_name, last_name) person FROM employees;`,
             function (err, results) {
                 resolve(results);
                 results.map(employee => {
-                    if (employee !== null) {
-                        employee = [
-                            {
-                                name: employee.person,
-                                value: employee.id
-                            } 
-                        ]
-                        console.log(employee)
-                        resolve(results);
+                    let employees =
+                    {
+                        name: employee.person,
+                        value: employee.id
                     }
+                    employeeArray.push(employees)
+                    resolve(results);
                 })
             }
         )
+    });
+
+    // ask user for title, salary, and department roles belongs to
+    grabRoleAndEmployees.then((roles, employees) => {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'firstName',
+                message: 'What is their first name?',
+                validate: firstNameInput => {
+                    if (firstNameInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid name.');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: 'What is their last name?',
+                validate: lastNameInput => {
+                    if (lastNameInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid name.');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'list',
+                message: 'Please select their Role.',
+                choices: roleArray,
+                name: "roleName"
+            },
+            {
+                type: 'list',
+                message: 'Please select their Manager.',
+                choices: employeeArray,
+                name: "manager"
+            }
+        ])
+            .then(({ firstName, lastName, roleName, manager }) => {
+                console.log(firstName, lastName, roleName, manager);
+                const newEmployee = { first_name: firstName, last_name: lastName, role_id: roleName, manager_id: manager }
+                fetch('http://localhost:3001/api/newEmployee', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newEmployee),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+                    .then(main());
+
+            })
     });
 
 
